@@ -1,0 +1,30 @@
+---
+version: '2.1'
+services:
+  odfe-node:
+    image: amazon/opendistro-for-elasticsearch:1.2.0
+    container_name: ${NODE_NAME}
+    environment:
+      - cluster.name=${CLUSTER_NAME}
+      - node.name=${NODE_NAME}
+      - cluster.initial_master_nodes=${NODE_LIST}
+      - discovery.zen.ping.unicast.hosts=${HOST_LIST}
+      # publish_host should be set to host ip.
+      - transport.publish_host={TRANSPORT_PUBLISH_HOST}
+      - transport.host=0.0.0.0
+      - network.host=0.0.0.0
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the Elasticsearch user, set to at least 65536 on modern systems
+        hard: 65536
+    volumes:
+      - ${LOCAL_DATA_DIR}:/usr/share/elasticsearch/data
+    ports:
+      - 9201:9200
+      - 9600:9600 # Required for Performance Analyzer
+      - 9300:9300 # Required for internal cluster transport.
