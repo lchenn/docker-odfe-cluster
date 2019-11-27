@@ -17,8 +17,27 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-json
       - id: check-xml
+      - id: requirements-txt-fixer
   - repo: https://github.com/pre-commit/mirrors-pylint
     rev: v2.4.4
     hooks:
       - id: pylint
         args: [--rcfile=.pylintrc, --max-line-length=100]
+  - repo: https://github.com/pryorda/dockerfilelint-precommit-hooks
+    rev: v0.1.0
+    hooks:
+      - id: dockerfilelint
+        stages: [commit]
+  - repo: https://github.com/fortman/pre-commit-prometheus
+    rev: v1.1.1
+    hooks:
+      - id: check-rules
+        entry: --entrypoint /bin/promtool prom/prometheus:v2.6.0
+        files: >
+          (?x)^(
+            rules_directory/.*\.yml
+          )$
+  - repo: https://github.com/ryanrhee/shellcheck-py
+    rev: v0.7.0.1-1
+    hooks:
+      - id: shellcheck
