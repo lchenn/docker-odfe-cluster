@@ -3,14 +3,14 @@ version: '2.1'
 services:
   odfe-node:
     image: amazon/opendistro-for-elasticsearch:1.2.0
-    container_name: ${NODE_NAME}
+    container_name: example-node2
     environment:
-      - cluster.name=${CLUSTER_NAME}
-      - node.name=${NODE_NAME}
-      - cluster.initial_master_nodes=${NODE_LIST}
-      - discovery.zen.ping.unicast.hosts=${HOST_LIST}
+      - cluster.name=odfe-dev
+      - node.name=example-node2
+      - cluster.initial_master_nodes=example-node3,example-node2,example-node1,
+      - discovery.zen.ping.unicast.hosts=node3.domain,node2.domain,node1.domain,
       # publish_host should be set to host ip.
-      - transport.publish_host=${TRANSPORT_PUBLISH_HOST}
+      - transport.publish_host=10.1.2.2
       - transport.host=0.0.0.0
       - network.host=0.0.0.0
       - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
@@ -23,7 +23,7 @@ services:
         soft: 65536 # maximum number of open files for the Elasticsearch user, set to at least 65536 on modern systems
         hard: 65536
     volumes:
-      - ${NODE_LOCAL_DATA_DIR}:/usr/share/elasticsearch/data
+      - /opt/data/elasticsearch_data/data:/usr/share/elasticsearch/data
     ports:
       - 9201:9200
       - 9600:9600 # Required for Performance Analyzer
