@@ -4,19 +4,22 @@ set -e
 set -x
 
 function gen_ca_pair() {
-  # Root CA
-  # 1. Generate the key for CA.
+  # Generate the key for CA.
   openssl genrsa -out root-ca-key.pem 2048
-  # 2. Generate the CA cert
+
+  # Generate the CA cert.
   openssl req -config root-ca.conf \
     -new -x509 \
     -sha256 \
     -key root-ca-key.pem \
     -out root-ca.pem
+
+  # Clean up.
+  rm -f root-ca.srl
 }
 
 # Node cert
-function generate_node_cert() {
+function generate_cert_pair() {
   local root_ca=$1
   local root_ca_key=$2
   local cert_name=$3
@@ -34,6 +37,7 @@ function generate_node_cert() {
     -v1 PBE-SHA1-3DES \
     -out "${cert_name}-key.pem"
 
+  # Generate the cert request config file.
   export CN_NAME=${cert_name}
   envsubst < csr.cnf > csr-temp.cnf
   unset CN_NAME
@@ -52,10 +56,10 @@ function generate_node_cert() {
     -sha256 \
     -out "${cert_name}.pem"
   # Clean up.
-  rm "${cert_name}-key-temp.pem" "${cert_name}.csr"
+  rm "${cert_name}-key-temp.pem" "${cert_name}.csr" "csr-temp.cnf"
 }
 
 gen_ca_pair
-generate_node_cert "root-ca.pem" "root-ca-key.pem" "admin"
-generate_node_cert "root-ca.pem" "root-ca-key.pem" "node1"
-generate_node_cert "root-ca.pem" "root-ca-key.pem" "node2"
+generate_cert_pair "root-ca.pem" "root-ca-key.pem" "admin"
+generate_cert_pair "root-ca.pem" "root-ca-key.pem" "node1"
+generate_cert_pair "root-ca.pem" "root-ca-key.pem" "node2"
