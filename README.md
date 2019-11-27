@@ -29,3 +29,5 @@ We would need 5 certificate related:
       - ./admin.pem:/usr/share/elasticsearch/config/admin.pem
       - ./admin-key.pem:/usr/share/elasticsearch/config/admin-key.pem
 ```
+See more there:
+https://opendistro.github.io/for-elasticsearch-docs/docs/install/docker-security/
