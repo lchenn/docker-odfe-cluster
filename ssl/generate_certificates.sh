@@ -15,7 +15,7 @@ function gen_ca_pair() {
     -out root-ca.pem
 
   # Clean up.
-  rm root-ca.srl
+  rm -f root-ca.srl
 }
 
 # Node cert
